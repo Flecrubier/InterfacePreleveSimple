@@ -26,14 +26,14 @@
     </test-fixture>
 
     <script>
-      suite('InterfacePreleveSimple-app', function() {
+      suite('ipreleve-app', function() {
 
         test('instantiating the element with default properties works', function() {
           var element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'InterfacePreleveSimple-app');
+          assert.equal(element.prop1, 'ipreleve-app');
           var elementShadowRoot = element.shadowRoot;
           var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello InterfacePreleveSimple-app!');
+          assert.equal(elementHeader.innerHTML, 'Hello ipreleve-app!');
         });
 
         test('setting a property on the element works', function() {

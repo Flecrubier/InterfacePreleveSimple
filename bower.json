@@ -3,7 +3,11 @@
   "description": "Mobile application to create and see botanist facts",
   "main": "index.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "polymerfire": "^2.2.1",
+    "paper-button": "^2.1.0",
+    "paper-input": "^2.2.2",
+    "geo-location": "^2.0.2"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
