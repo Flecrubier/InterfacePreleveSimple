@@ -1,0 +1,7 @@
+{
+  "name": "InterfacePreleveSimple",
+  "short_name": "InterfacePreleveSimple",
+  "description": "Mobile application to create and see botanist facts",
+  "start_url": "/",
+  "display": "standalone"
+}
