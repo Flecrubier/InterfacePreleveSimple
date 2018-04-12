@@ -8,7 +8,8 @@
     "paper-button": "^2.1.0",
     "paper-input": "^2.2.2",
     "geo-location": "^2.0.2",
-    "paper-progress": "^2.1.0"
+    "paper-progress": "^2.1.0",
+    "paper-collapse-item": "^2.3.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

@@ -9,6 +9,8 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-collapse-item/paper-collapse-item.html">
+<link rel="import" href="../../bower_components/paper-collapse-item/paper-collapse-group.html">
 <link rel="import" href="../../bower_components/geo-location/geo-location.html">
 
 <dom-module id="ipreleve-app">
@@ -18,7 +20,6 @@
         display: block;
       }
     </style>
-
 
     <geo-location latitude="{{latitude}}" longitude="{{longitude}}"></geo-location>
 
@@ -55,6 +56,28 @@
         path="/releves"
         data="{{data}}">
       </firebase-query>
+
+
+      <br/>
+      <h5>Liste des relevés actuels :</h5>
+
+      <paper-collapse-group>
+        <template is="dom-repeat" items="[[data]]">
+          <paper-collapse-item icon="icons:info" header ="Relevé [[index]]">
+            <ul list-style-type="square">Relevé [[index]] :
+              <li>Email          : [[item.mail]]</li>
+              <li>Espèce         : [[item.espece]]</li>
+              <li>Famille        : [[item.famille]]</li>
+              <li>Longitude      : [[item.Longitude]]</li>
+              <li>Latitude       : [[item.Latitude]]</li>
+              <li><img src="[[item.URL_Image]]"/></li>
+            </ul>
+          </paper-collapse-item>
+        </template>
+      </paper-collapse-group>
+
+
+
 
 
       <br/>
