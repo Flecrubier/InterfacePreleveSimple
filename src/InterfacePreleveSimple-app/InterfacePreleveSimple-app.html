@@ -53,7 +53,7 @@
         app-name="iPreleveFirebase"
         id="query"
         ref="{{ref}}"
-        path="/releves"
+        path="/releves/[[user.uid]]"
         data="{{data}}">
       </firebase-query>
 
@@ -64,7 +64,7 @@
       <paper-collapse-group>
         <template is="dom-repeat" items="[[data]]">
           <paper-collapse-item icon="icons:info" header ="Relevé [[index]]">
-            <ul list-style-type="square">Relevé [[index]] :
+            <ul list-style-type="square">
               <li>Email          : [[item.mail]]</li>
               <li>Espèce         : [[item.espece]]</li>
               <li>Famille        : [[item.famille]]</li>
@@ -78,8 +78,6 @@
 
 
 
-
-
       <br/>
       <h5>Ajouter un relevé :</h5>
       <paper-input style="width:20em" label="Nom de l'espèce" value="{{specie}}" maxlength="30"></paper-input>
@@ -90,7 +88,7 @@
       <firebase-storage-multiupload
         app-name="iPreleveFirebase"
         id="fs"
-        path="/relevesImages"
+        path="/relevesImages/[[user.email]]"
         files="[[files]]"
         upload-tasks="{{uploadTasks}}"
         on-error="_showError"
