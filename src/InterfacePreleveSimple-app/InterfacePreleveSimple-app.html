@@ -4,8 +4,11 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-upload-task.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../bower_components/geo-location/geo-location.html">
 
 <dom-module id="ipreleve-app">
@@ -17,19 +20,19 @@
     </style>
 
 
-      <geo-location latitude="{{latitude}}" longitude="{{longitude}}"></geo-location>
+    <geo-location latitude="{{latitude}}" longitude="{{longitude}}"></geo-location>
 
-      <ul>
-        <li>Latitude: [[latitude]]</li>
-        <li>Longitude: [[longitude]]</li>
-      </ul>
-    </br>
+    <h2>S'il n'y a pas de valeur pour la latitude/longitude veuillez actualiser dans quelques instants</h2>
+    <div>Latitude : [[latitude]]</div>
+    <div>Longitude : [[longitude]]</div>
+    <br/>
 
     <firebase-app
       name="iPreleveFirebase"
       api-key="AIzaSyARAy4a8CcjZXD2d4G34xUegbhhpuoJx-U"
       auth-domain="interfaceprelevesimple.firebaseapp.com"
-      database-url="https://interfaceprelevesimple.firebaseio.com">
+      database-url="https://interfaceprelevesimple.firebaseio.com"
+      storage-bucket="gs://interfaceprelevesimple.appspot.com">
     </firebase-app>
 
     <firebase-auth
@@ -49,16 +52,61 @@
         app-name="iPreleveFirebase"
         id="query"
         ref="{{ref}}"
-        path="/"
+        path="/releves"
         data="{{data}}">
       </firebase-query>
-      
+
+
       <br/>
       <h5>Ajouter un relevé :</h5>
       <paper-input style="width:20em" label="Nom de l'espèce" value="{{specie}}" maxlength="30"></paper-input>
-      <paper-input style="width:20em" label="Nom du genre" value="{{gender}}" maxlength="30"></paper-input>
-      <!-- Importer un fichier photo -->
-      <paper-button raised on-tap="_addData">Ajouter</paper-button>
+      <paper-input style="width:20em" label="Nom de la famille" value="{{family}}" maxlength="30"></paper-input>
+
+      <input style="width:20em" type="file" id="file-uploader" accept="image/*" on-change="onFileUpload" hidden$="this.files.length>0"></input>
+
+      <firebase-storage-multiupload
+        app-name="iPreleveFirebase"
+        id="fs"
+        path="/relevesImages"
+        files="[[files]]"
+        upload-tasks="{{uploadTasks}}"
+        on-error="_showError"
+        force-unique
+        auto>
+      </firebase-storage-multiupload>
+      <template is="dom-repeat" items="[[uploadTasks]]">
+        <firebase-storage-upload-task
+          app-name="iPreleveFirebase"
+          task="[[item]]"
+          id="ut-[[index]]"
+          bytes-transferred="{{item.bytesTransferred}}"
+          total-bytes="{{item.totalBytes}}"
+          state="{{item.state}}"
+          download-url="{{item.downloadUrl}}"
+          metadata="{{item.metadata}}"
+          path="{{item.path}}">
+        </firebase-storage-upload-task>
+
+        Etat : [[item.state]] <br>
+
+        <template is="dom-if" if="[[!isEqual(item.state, 'success')]]">
+          <paper-progress
+            value="{{item.bytesTransferred}}"
+            min="0"
+            max="{{item.totalBytes}}">
+          </paper-progress>
+        </template>
+
+        <template is="dom-if" if="[[isEqual(item.state, 'success')]]">
+          <paper-button raised on-tap="_addData">Ajouter</paper-button>
+        </template>
+
+      </template>
+
+<!--
+      paper-button raised on-tap="upload">Upload file</paper-button>
+-->
+
     </template>
 
 
@@ -77,6 +125,15 @@
           prop1: {
             type: String,
             value: 'ipreleve-app'
+          },
+          uploadTasks: {
+            type: Array,
+            observer: '_uploadTasksChanged'
+          },
+          files: {
+            type: Array,
+            notify: true,
+            value: [],
           }
         };
       }
@@ -95,6 +152,52 @@
         if(e){
           console.log(e);
         }
+      }
+
+      upload(){
+        if(this.shadowRoot.querySelector("#file-uploader").files.length == 0){
+          alert("Vous devez choisir une image");
+          return 1;
+        }else if(this.shadowRoot.querySelector("#file-uploader").files.length > 1){
+          alert("Vous ne pouvez upload qu'un seul fichier");
+          return 1;
+        }else{
+          this.shadowRoot.querySelector("#fs").upload(this.shadowRoot.querySelector("#file-uploader").files);
+          return 0;
+        }
+      }
+
+      _uploadTasksChanged(uploadTasks) {
+        //console.log(uploadTasks);
+      }
+
+      onFileUpload(e) {
+        this.files = e.target.files;
+        this.shadowRoot.querySelector("#file-uploader").style.visibility = "hidden";
+      }
+
+      isEqual(a, b) {
+        return a === b;
+      }
+
+      _addData(){
+        //if(this.upload() == 1) return;
+        console.log(this.user.email);
+        console.log(this.specie);
+        console.log(this.family);
+        console.log(this.longitude);
+        console.log(this.latitude);
+        console.log(this.shadowRoot.querySelector("#ut-0").downloadUrl);
+
+        this.shadowRoot.querySelector("#query").ref.push({
+          mail : this.user.email,
+          espece : this.specie,
+          famille : this.family,
+          Longitude : this.longitude,
+          Latitude : this.latitude,
+          URL_Image : this.shadowRoot.querySelector("#ut-0").downloadUrl
+        });
+        window.location.reload();
       }
     }
 
